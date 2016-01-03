@@ -65,7 +65,7 @@ function MatVideo_KeyPressFcn(hObject, eventdata, handles)
 
 			% key RightArrow(frm++)
 			case char(29)
-				if ud.glbFrm < ud.vMaxFrm - ud.frmStp * 10;
+				if ud.glbFrm < (ud.vMaxFrm - ud.frmStp * 10)
 					ud.glbFrm = ud.glbFrm + ud.frmStp * 10;
 					ret = OnDraw;
 				end;
@@ -151,14 +151,21 @@ function Open_Callback(hObject, eventdata, handles)
 %% UImenu: Open video
 
 	global ud;
-	[fname, fpath] = uigetfile('*.mp4', 'Pick a Video file');
-	dat = strcat(fpath,fname);
-	
-	if isempty(dat)
+	[fname, fpath] = uigetfile( ...
+		{   '*.mp4;*.m4v;*.m2p;*.mpg', 'MPEG Files (*.mp4,*.m4v,*.m2p,*.mpg)';
+			'*.mov', 'QuickTime movie (*.mov)'; ...
+			'*.avi', 'AVI File (*.avi)'; ...
+			'*.wmv', 'Windows Media Video (*.wmv)'; ...
+			'*.mts', 'MTS File (*.mts)'; ...
+			'*.vob', 'VOB File (*.vob)'; ...
+			'*.*', 'All Files (*.*)'}, ...
+			'Pick a file');
+	if isequal(fname,0) || isequal(fpath,0)
 		return;
+	else
+		fpVid = strcat(fpath,fname);
 	end;
 	
-	fpVid = strcat( dat(1:end-3), 'mp4');
 	ud.gVideo = VideoReader( fpVid );
 	ud.vMaxFrm = floor( ud.gVideo.Duration / (1/ud.gVideo.FrameRate) );
 	
